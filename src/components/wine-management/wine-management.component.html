@@ -8,12 +8,12 @@
           <h2 class="text-2xl font-bold text-amber-400 font-cinzel">
             @if(user.role === 'master') { Gestione Cantina } @else { Lista Vini }
           </h2>
-           <button (click)="close.emit()" class="px-4 py-2 bg-gray-600 text-white font-bold rounded-md hover:bg-gray-700 transition-colors text-sm flex items-center gap-2">
+           <a routerLink="/" class="px-4 py-2 bg-gray-600 text-white font-bold rounded-md hover:bg-gray-700 transition-colors text-sm flex items-center gap-2">
              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.707-10.293a1 1 0 00-1.414-1.414L7 8.586 5.707 7.293a1 1 0 00-1.414 1.414L7.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293z" clip-rule="evenodd" />
             </svg>
             <span>Torna alla Scansione</span>
-          </button>
+          </a>
         </div>
 
         @if (user.role === 'master') {

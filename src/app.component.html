@@ -27,7 +27,7 @@
 
   <main class="container mx-auto p-4 sm:p-6 lg:p-8">
     @if (currentUser()) {
-      <app-wine-scanner />
+      <router-outlet />
     } @else {
       <app-login />
     }

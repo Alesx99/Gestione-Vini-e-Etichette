@@ -1,6 +1,7 @@
-import { Component, ChangeDetectionStrategy, inject, signal, output } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { WineService } from '../../services/wine.service';
 import { AuthService } from '../../services/auth.service';
 import { Wine } from '../../models/wine.model';
@@ -11,12 +12,11 @@ import { WineImportComponent } from '../wine-import/wine-import.component';
 @Component({
   selector: 'app-wine-management',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, DecimalPipe, WineLabelComponent, WineImportComponent],
+  imports: [CommonModule, ReactiveFormsModule, DecimalPipe, WineLabelComponent, WineImportComponent, RouterLink],
   templateUrl: './wine-management.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WineManagementComponent {
-  close = output<void>();
   wineService = inject(WineService);
   authService = inject(AuthService);
   private fb = inject(FormBuilder);

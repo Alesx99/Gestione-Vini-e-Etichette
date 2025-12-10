@@ -1,18 +1,18 @@
 import { Component, ChangeDetectionStrategy, inject, signal, ElementRef, viewChild, effect, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { WineService } from '../../services/wine.service';
 import { AuthService } from '../../services/auth.service';
 import { Wine } from '../../models/wine.model';
 import { WineDetailsComponent } from '../wine-details/wine-details.component';
 import { WineLabelComponent } from '../wine-label/wine-label.component';
-import { WineManagementComponent } from '../wine-management/wine-management.component';
 
 @Component({
   selector: 'app-wine-scanner',
   templateUrl: './wine-scanner.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [CommonModule, WineDetailsComponent, WineLabelComponent, WineManagementComponent],
+  imports: [CommonModule, WineDetailsComponent, WineLabelComponent, RouterLink],
 })
 export class WineScannerComponent implements OnDestroy {
   wineService = inject(WineService);
@@ -30,7 +30,6 @@ export class WineScannerComponent implements OnDestroy {
   private codeReader: any;
 
   currentUser = this.authService.currentUser;
-  showManagement = signal(false);
 
   constructor() {
     effect(() => {
