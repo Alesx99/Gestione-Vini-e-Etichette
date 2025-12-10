@@ -1,0 +1,33 @@
+@if (wine(); as w) {
+<div class="printable-area">
+  <div class="p-4 border-2 border-dashed border-gray-500 bg-white text-black w-full max-w-xs mx-auto">
+    <div class="text-center">
+      <h4 class="text-xl font-bold font-serif">{{ w.name }}</h4>
+      <p class="text-sm">{{ w.vineyard }} - {{ w.year }}</p>
+      <p class="text-xs italic text-gray-600">{{ w.provenienza }}</p>
+    </div>
+
+    <div class="text-center my-4">
+      <h5 class="text-xs uppercase tracking-widest">Prezzo Enoteca</h5>
+      <p class="text-4xl font-extrabold">
+        {{ w.price.enoteca | number:'1.2-2' }} €
+      </p>
+    </div>
+
+    <div class="flex flex-col items-center font-mono text-sm tracking-widest">
+      <div class="w-full px-2">
+         <app-barcode [value]="w.barcode"></app-barcode>
+      </div>
+      <p class="mt-1">{{ w.barcode }}</p>
+    </div>
+  </div>
+</div>
+<div class="text-center mt-4 no-print">
+    <button (click)="print()" class="px-6 py-2 bg-green-600 text-white font-bold rounded-md hover:bg-green-700 transition-colors flex items-center gap-2 mx-auto">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v6a2 2 0 002 2h1v-4a1 1 0 011-1h8a1 1 0 011 1v4h1a2 2 0 002-2v-6a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd" />
+      </svg>
+      <span>Stampa</span>
+    </button>
+</div>
+}

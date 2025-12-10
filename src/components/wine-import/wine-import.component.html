@@ -1,0 +1,101 @@
+<div class="bg-gray-800 border border-gray-700 rounded-lg p-6 shadow-xl">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold text-amber-400 font-cinzel">Importazione Vini da File</h2>
+    <button (click)="close.emit()" class="px-4 py-2 bg-gray-600 text-white font-bold rounded-md hover:bg-gray-700 transition-colors text-sm flex items-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.707-10.293a1 1 0 00-1.414-1.414L7 8.586 5.707 7.293a1 1 0 00-1.414 1.414L7.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293z" clip-rule="evenodd" />
+      </svg>
+      <span>Torna alla Gestione</span>
+    </button>
+  </div>
+
+  <div class="bg-gray-900 border border-gray-700 rounded-lg p-4 mb-6">
+    <h3 class="font-bold text-lg text-amber-300">Istruzioni</h3>
+    <p class="text-sm text-gray-400 mt-2">
+      Carica un file Excel (.xlsx). Assicurati che il file contenga le seguenti intestazioni di colonna (non sensibile a maiuscole/minuscole):
+    </p>
+    <div class="flex flex-wrap gap-2 mt-3">
+      <span class="px-2 py-1 text-xs bg-gray-700 text-gray-200 rounded">Nome</span>
+      <span class="px-2 py-1 text-xs bg-gray-700 text-gray-200 rounded">Cantina</span>
+      <span class="px-2 py-1 text-xs bg-gray-700 text-gray-200 rounded">Provenienza</span>
+      <span class="px-2 py-1 text-xs bg-gray-700 text-gray-200 rounded">Anno</span>
+      <span class="px-2 py-1 text-xs bg-gray-700 text-gray-200 rounded">Prezzo Acquisto</span>
+      <span class="px-2 py-1 text-xs bg-gray-700 text-gray-200 rounded">Prezzo Ingrosso</span>
+      <span class="px-2 py-1 text-xs bg-gray-700 text-gray-200 rounded">Prezzo Enoteca</span>
+    </div>
+  </div>
+
+  @if (winesArray.controls.length === 0) {
+    <div class="flex items-center justify-center w-full">
+        <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-600 border-dashed rounded-lg cursor-pointer bg-gray-900 hover:bg-gray-800">
+            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                <svg class="w-10 h-10 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                </svg>
+                <p class="mb-2 text-sm text-gray-400"><span class="font-semibold">Clicca per caricare</span> o trascina il file</p>
+                <p class="text-xs text-gray-500">Solo file .xlsx</p>
+            </div>
+            <input id="dropzone-file" type="file" class="hidden" (change)="onFileChange($event)" accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+        </label>
+    </div> 
+  }
+
+  @if (isProcessing()) {
+    <div class="text-center py-8 text-gray-400">
+        <p>Elaborazione del file in corso...</p>
+    </div>
+  }
+  @if (error()) {
+    <div class="p-3 bg-red-900 bg-opacity-50 text-red-300 border border-red-700 rounded-md text-sm my-4">
+      {{ error() }}
+    </div>
+  }
+
+  @if (winesArray.controls.length > 0) {
+    <h3 class="text-xl font-bold text-amber-300 font-cinzel mb-4">Revisione Vini da Importare</h3>
+    <p class="text-sm text-gray-400 mb-4">Controlla e correggi i dati estratti prima di aggiungerli alla cantina. I codici a barre verranno generati automaticamente.</p>
+    
+    <form [formGroup]="winesToImportForm" (ngSubmit)="importWines()">
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-gray-900 border border-gray-700 text-sm">
+           <thead class="bg-black bg-opacity-30">
+            <tr>
+              <th class="px-2 py-2 text-left text-xs font-medium text-amber-300 uppercase tracking-wider">Nome</th>
+              <th class="px-2 py-2 text-left text-xs font-medium text-amber-300 uppercase tracking-wider">Cantina</th>
+              <th class="px-2 py-2 text-left text-xs font-medium text-amber-300 uppercase tracking-wider">Provenienza</th>
+              <th class="px-2 py-2 text-left text-xs font-medium text-amber-300 uppercase tracking-wider">Anno</th>
+              <th class="px-2 py-2 text-left text-xs font-medium text-amber-300 uppercase tracking-wider">Acquisto</th>
+              <th class="px-2 py-2 text-left text-xs font-medium text-amber-300 uppercase tracking-wider">Ingrosso</th>
+              <th class="px-2 py-2 text-left text-xs font-medium text-amber-300 uppercase tracking-wider">Enoteca</th>
+              <th class="w-12"></th>
+            </tr>
+          </thead>
+          <tbody formArrayName="wines">
+            @for(wineGroup of winesArray.controls; track $index) {
+              <tr [formGroupName]="$index" class="border-t border-gray-700">
+                <td><input formControlName="name" class="w-full bg-transparent p-2 focus:bg-gray-700 outline-none rounded" [class.border-red-500]="wineGroup.get('name')?.invalid"></td>
+                <td><input formControlName="vineyard" class="w-full bg-transparent p-2 focus:bg-gray-700 outline-none rounded" [class.border-red-500]="wineGroup.get('vineyard')?.invalid"></td>
+                <td><input formControlName="provenienza" class="w-full bg-transparent p-2 focus:bg-gray-700 outline-none rounded" [class.border-red-500]="wineGroup.get('provenienza')?.invalid"></td>
+                <td><input formControlName="year" type="number" class="w-20 bg-transparent p-2 focus:bg-gray-700 outline-none rounded" [class.border-red-500]="wineGroup.get('year')?.invalid"></td>
+                <td><input formControlName="price_acquisto" type="number" step="0.01" class="w-24 bg-transparent p-2 focus:bg-gray-700 outline-none rounded" [class.border-red-500]="wineGroup.get('price_acquisto')?.invalid"></td>
+                <td><input formControlName="price_ingrosso" type="number" step="0.01" class="w-24 bg-transparent p-2 focus:bg-gray-700 outline-none rounded" [class.border-red-500]="wineGroup.get('price_ingrosso')?.invalid"></td>
+                <td><input formControlName="price_enoteca" type="number" step="0.01" class="w-24 bg-transparent p-2 focus:bg-gray-700 outline-none rounded" [class.border-red-500]="wineGroup.get('price_enoteca')?.invalid"></td>
+                <td class="text-center">
+                    <button type="button" (click)="removeWine($index)" class="text-red-500 hover:text-red-400 p-2" title="Rimuovi riga">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                    </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <div class="mt-6 flex justify-end gap-4">
+        <button type="button" (click)="close.emit()" class="px-4 py-2 bg-gray-600 text-white font-bold rounded-md hover:bg-gray-700 transition-colors">Annulla Importazione</button>
+        <button type="submit" [disabled]="winesToImportForm.invalid" class="px-6 py-2 bg-green-600 text-white font-bold rounded-md hover:bg-green-700 disabled:bg-gray-500 disabled:cursor-not-allowed transition-colors">
+            Aggiungi {{ winesArray.controls.length }} Vini alla Cantina
+        </button>
+      </div>
+    </form>
+  }
+</div>

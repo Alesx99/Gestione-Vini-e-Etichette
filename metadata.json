@@ -1,0 +1,7 @@
+{
+  "name": "Privilege Cafè & Wine - Gestione Cantina",
+  "description": "Un'applicazione per la gestione della cantina di vini, la stampa di etichette e la visualizzazione dei prezzi in base al livello di accesso dell'utente.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

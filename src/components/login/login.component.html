@@ -1,0 +1,66 @@
+<div class="flex items-center justify-center pt-10">
+  <div class="w-full max-w-md p-8 space-y-8 bg-gray-800 rounded-lg border border-gray-700 shadow-2xl">
+    <div class="text-center">
+      <h2 class="mt-6 text-3xl font-extrabold font-cinzel text-amber-400">
+        Accesso Area Riservata
+      </h2>
+      <p class="mt-2 text-sm text-gray-400">
+        Inserisci le tue credenziali per continuare
+      </p>
+    </div>
+    <form class="mt-8 space-y-6" (submit)="login($event)">
+      <div class="rounded-md shadow-sm -space-y-px">
+        <div>
+          <label for="username" class="sr-only">Username</label>
+          <input
+            id="username"
+            name="username"
+            type="text"
+            required
+            [value]="username()"
+            (input)="username.set($any($event.target).value)"
+            class="appearance-none rounded-none relative block w-full px-3 py-3 border border-gray-600 bg-gray-900 text-gray-200 placeholder-gray-500 rounded-t-md focus:outline-none focus:ring-amber-500 focus:border-amber-500 focus:z-10 sm:text-sm"
+            placeholder="Username"
+          />
+        </div>
+        <div>
+          <label for="password" class="sr-only">Password</label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            required
+            [value]="password()"
+            (input)="password.set($any($event.target).value)"
+            class="appearance-none rounded-none relative block w-full px-3 py-3 border border-gray-600 bg-gray-900 text-gray-200 placeholder-gray-500 rounded-b-md focus:outline-none focus:ring-amber-500 focus:border-amber-500 focus:z-10 sm:text-sm"
+            placeholder="Password"
+          />
+        </div>
+      </div>
+
+      @if (error()) {
+        <div class="p-3 bg-red-900 bg-opacity-50 text-red-300 border border-red-700 rounded-md text-sm">
+          {{ error() }}
+        </div>
+      }
+
+      <div>
+        <button
+          type="submit"
+          [disabled]="isLoading()"
+          class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-amber-500 disabled:bg-gray-500 disabled:cursor-not-allowed transition-colors duration-200"
+        >
+          @if (isLoading()) {
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span>Accesso in corso...</span>
+          } @else {
+            <span>Accedi</span>
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,166 @@
+@if(currentUser(); as user) {
+  <div class="max-w-6xl mx-auto animate-fade-in">
+    @if (showImport()) {
+      <app-wine-import (close)="showImport.set(false)"></app-wine-import>
+    } @else {
+      <div class="bg-gray-800 border border-gray-700 rounded-lg p-6 shadow-xl">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-amber-400 font-cinzel">
+            @if(user.role === 'master') { Gestione Cantina } @else { Lista Vini }
+          </h2>
+           <button (click)="close.emit()" class="px-4 py-2 bg-gray-600 text-white font-bold rounded-md hover:bg-gray-700 transition-colors text-sm flex items-center gap-2">
+             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.707-10.293a1 1 0 00-1.414-1.414L7 8.586 5.707 7.293a1 1 0 00-1.414 1.414L7.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293z" clip-rule="evenodd" />
+            </svg>
+            <span>Torna alla Scansione</span>
+          </button>
+        </div>
+
+        @if (user.role === 'master') {
+          <div class="flex flex-col sm:flex-row justify-end mb-4 gap-3">
+             <button (click)="showImport.set(true)" class="px-4 py-2 bg-teal-600 text-white font-bold rounded-md hover:bg-teal-700 transition-colors flex items-center justify-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+              </svg>
+              <span>Importa da File</span>
+            </button>
+            <button (click)="openAddModal()" class="px-4 py-2 bg-amber-600 text-white font-bold rounded-md hover:bg-amber-700 transition-colors flex items-center justify-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+              </svg>
+              <span>Aggiungi Vino</span>
+            </button>
+          </div>
+        }
+
+        <!-- Wine List Table -->
+        <div class="overflow-x-auto">
+          <table class="min-w-full bg-gray-900 border border-gray-700">
+            <thead class="bg-black bg-opacity-30">
+              <tr>
+                <th class="px-4 py-3 text-left text-xs font-medium text-amber-300 uppercase tracking-wider">Nome</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-amber-300 uppercase tracking-wider">Cantina</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-amber-300 uppercase tracking-wider hidden md:table-cell">Provenienza</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-amber-300 uppercase tracking-wider">Anno</th>
+                @if (user.role === 'master') {
+                  <th class="px-4 py-3 text-left text-xs font-medium text-amber-300 uppercase tracking-wider">Acquisto</th>
+                }
+                @if (user.role === 'master' || user.role === 'operator') {
+                  <th class="px-4 py-3 text-left text-xs font-medium text-amber-300 uppercase tracking-wider">Ingrosso</th>
+                }
+                <th class="px-4 py-3 text-left text-xs font-medium text-amber-300 uppercase tracking-wider">Enoteca</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-amber-300 uppercase tracking-wider">Azioni</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-700">
+              @for (wine of wines(); track wine.id) {
+                <tr class="hover:bg-gray-800">
+                  <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-200">{{ wine.name }}</td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-400">{{ wine.vineyard }}</td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-400 hidden md:table-cell">{{ wine.provenienza }}</td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-400">{{ wine.year }}</td>
+                  @if (user.role === 'master') {
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-300">{{ wine.price.acquisto | number:'1.2-2' }} €</td>
+                  }
+                  @if (user.role === 'master' || user.role === 'operator') {
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-300">{{ wine.price.ingrosso | number:'1.2-2' }} €</td>
+                  }
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-300 font-bold">{{ wine.price.enoteca | number:'1.2-2' }} €</td>
+                  <td class="px-4 py-3 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                     <button (click)="openPrintModal(wine)" class="text-teal-400 hover:text-teal-300 transition-colors" title="Stampa Etichetta">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v6a2 2 0 002 2h1v-4a1 1 0 011-1h8a1 1 0 011 1v4h1a2 2 0 002-2v-6a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    @if (user.role === 'master') {
+                      <button (click)="openEditModal(wine)" class="text-indigo-400 hover:text-indigo-300 transition-colors">Modifica</button>
+                      <button (click)="confirmDelete(wine)" class="text-red-500 hover:text-red-400 transition-colors">Elimina</button>
+                    }
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="8" class="text-center py-8 text-gray-500">Nessun vino nel database. Aggiungine uno per iniziare.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Add/Edit Modal -->
+  @if (isModalOpen()) {
+    <div class="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4" (click)="closeModal()">
+      <div class="bg-gray-800 rounded-lg shadow-2xl w-full max-w-2xl border border-gray-700 max-h-[90vh] overflow-y-auto" (click)="$event.stopPropagation()">
+        <form [formGroup]="wineForm" (ngSubmit)="saveWine()">
+          <div class="p-6">
+            <h3 class="text-2xl font-bold text-amber-400 font-cinzel mb-6">{{ editingWine() ? 'Modifica Vino' : 'Aggiungi Nuovo Vino' }}</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- Left Column -->
+              <div class="space-y-4">
+                <div>
+                  <label for="name" class="block text-sm font-medium text-gray-300">Nome Vino</label>
+                  <input type="text" id="name" formControlName="name" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-amber-500 focus:border-amber-500">
+                </div>
+                <div>
+                  <label for="vineyard" class="block text-sm font-medium text-gray-300">Cantina</label>
+                  <input type="text" id="vineyard" formControlName="vineyard" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-amber-500 focus:border-amber-500">
+                </div>
+                 <div>
+                  <label for="provenienza" class="block text-sm font-medium text-gray-300">Provenienza</label>
+                  <input type="text" id="provenienza" formControlName="provenienza" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-amber-500 focus:border-amber-500">
+                </div>
+                <div class="flex gap-4">
+                    <div class="flex-1">
+                      <label for="year" class="block text-sm font-medium text-gray-300">Anno</label>
+                      <input type="number" id="year" formControlName="year" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-amber-500 focus:border-amber-500">
+                    </div>
+                </div>
+                 <div>
+                  <label for="barcode" class="block text-sm font-medium text-gray-300">Codice a Barre (Generato Automaticamente)</label>
+                  <input type="text" id="barcode" formControlName="barcode" class="mt-1 block w-full bg-gray-900 border-gray-600 rounded-md shadow-sm py-2 px-3 text-gray-400 focus:outline-none focus:ring-amber-500 focus:border-amber-500 cursor-not-allowed">
+                </div>
+              </div>
+
+              <!-- Right Column - Prices -->
+              <div class="space-y-4 p-4 bg-gray-900 rounded-md border border-gray-700" formGroupName="price">
+                <h4 class="text-lg font-medium text-amber-400">Prezzi</h4>
+                 <div>
+                  <label for="acquisto" class="block text-sm font-medium text-gray-300">Prezzo Acquisto (€)</label>
+                  <input type="number" step="0.01" id="acquisto" formControlName="acquisto" class="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-amber-500 focus:border-amber-500">
+                </div>
+                 <div>
+                  <label for="ingrosso" class="block text-sm font-medium text-gray-300">Prezzo Ingrosso (€)</label>
+                  <input type="number" step="0.01" id="ingrosso" formControlName="ingrosso" class="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-amber-500 focus:border-amber-500">
+                </div>
+                 <div>
+                  <label for="enoteca" class="block text-sm font-medium text-gray-300">Prezzo Enoteca (€)</label>
+                  <input type="number" step="0.01" id="enoteca" formControlName="enoteca" class="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-amber-500 focus:border-amber-500">
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-black bg-opacity-30 px-6 py-4 flex justify-end gap-4">
+            <button type="button" (click)="closeModal()" class="px-4 py-2 bg-gray-600 text-white font-bold rounded-md hover:bg-gray-700 transition-colors">Annulla</button>
+            <button type="submit" [disabled]="wineForm.invalid" class="px-4 py-2 bg-amber-600 text-white font-bold rounded-md hover:bg-amber-700 disabled:bg-gray-500 disabled:cursor-not-allowed transition-colors">Salva</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- Print Label Modal -->
+  @if (wineToPrint(); as wine) {
+    <div class="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4" (click)="closePrintModal()">
+       <div class="bg-gray-800 rounded-lg shadow-2xl w-full max-w-md border border-gray-700 p-6" (click)="$event.stopPropagation()">
+          <h3 class="text-2xl font-bold text-amber-400 font-cinzel mb-6 text-center">Anteprima Etichetta</h3>
+          <app-wine-label [wine]="wine"></app-wine-label>
+           <button (click)="closePrintModal()" class="mt-6 w-full px-4 py-2 bg-gray-600 text-white font-bold rounded-md hover:bg-gray-700 transition-colors">Chiudi Anteprima</button>
+       </div>
+    </div>
+  }
+}
