@@ -19,7 +19,8 @@ import { WineImportComponent } from '../wine-import/wine-import.component';
 export class WineManagementComponent {
   wineService = inject(WineService);
   authService = inject(AuthService);
-  private fb = inject(FormBuilder);
+  // FIX: Explicitly type FormBuilder to resolve type inference issue with inject().
+  private fb: FormBuilder = inject(FormBuilder);
 
   currentUser = this.authService.currentUser;
   wines = this.wineService.wines;

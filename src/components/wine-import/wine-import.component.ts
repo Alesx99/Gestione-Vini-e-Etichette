@@ -25,7 +25,8 @@ type WineFormGroup = FormGroup<{
 export class WineImportComponent {
   close = output<void>();
   private wineService = inject(WineService);
-  private fb = inject(FormBuilder);
+  // FIX: Explicitly type FormBuilder to resolve type inference issue with inject().
+  private fb: FormBuilder = inject(FormBuilder);
 
   isProcessing = signal(false);
   error = signal<string | null>(null);
